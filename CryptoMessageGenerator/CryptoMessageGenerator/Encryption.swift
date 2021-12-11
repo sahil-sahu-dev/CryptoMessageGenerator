@@ -23,6 +23,13 @@ class Encryption {
         return  privateKey.publicKey
     }
     
+    static func exportPublicKey(_ publicKey: P256.KeyAgreement.PublicKey) -> String {
+        let rawPublicKey = publicKey.rawRepresentation
+        let base64PublicKey = rawPublicKey.base64EncodedString()
+        let encodedPublicKey = base64PublicKey.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+        return encodedPublicKey
+    }
+    
     //MARK: Private Key to String
     static func convertPrivateKeyToString(_ privateKey: P256.KeyAgreement.PrivateKey) -> String {
         let rawKey = privateKey.rawRepresentation

@@ -13,16 +13,11 @@ struct CryptoMessageGeneratorView: View {
     @State private var messageToEncrypt = ""
     @State private var errorMessage = ""
     @State private var decryptedMessage = ""
-    var privateKey: P256.KeyAgreement.PrivateKey
-    
-    init() {
-        privateKey = Encryption.generatePrivateKey()
-    }
+    @State private var equal = ""
+
     
     var body: some View {
         NavigationView {
-            
-            
             
             
             Form{
@@ -34,13 +29,24 @@ struct CryptoMessageGeneratorView: View {
                     
                     
                     Button {
+                        let privateKey = Encryption.generatePrivateKey()
+                        
                         let publicKey = Encryption.extractPublicKeyFromPrivate(privateKey: privateKey)
+                        
                         do{
-                            let symmetricKey = try Encryption.deriveSymmtericKey(privateKey: privateKey, publicKey: publicKey)
+                            let k2 = Encryption.generatePrivateKey()
+                            let pb = Encryption.extractPublicKeyFromPrivate(privateKey: k2)
+                            let symmetricKey = try Encryption.deriveSymmtericKey(privateKey: privateKey, publicKey: pb)
                             let encryptedMessage = try Encryption.encryptTest(text: messageToEncrypt, using: symmetricKey)
                             self.errorMessage = encryptedMessage
                             
-                            self.decryptedMessage = Decrpytion.decryptText(text: encryptedMessage, using: symmetricKey)
+                            
+                            
+                            let sym = try Encryption.deriveSymmtericKey(privateKey: k2, publicKey: publicKey)
+                            
+                            
+                            
+                            self.decryptedMessage = Decrpytion.decryptText(text: encryptedMessage, using: sym)
                             
                         }
                         catch{
@@ -63,10 +69,13 @@ struct CryptoMessageGeneratorView: View {
                 }
                 
                 Section(header: Text("Message after decrypting")) {
-                    Text(decryptedMessage)
+                    Text( decryptedMessage)
+                    
                 }
                 
             }
+            
+            
             
             .navigationTitle("Message Encryption")
             .background(Color(.init(white: 0, alpha:0.05)).ignoresSafeArea())
